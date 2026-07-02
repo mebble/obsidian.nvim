@@ -135,16 +135,26 @@ M.build_find_cmd = function(path, term, opts)
   end
 
   if term ~= nil then
-    term = escape_rg_glob(term)
+    local escaped = escape_rg_glob(term)
+    local has_path_sep = escaped:find("/", 1, true) ~= nil
     if opts.include_non_markdown then
-      term = "*" .. term .. "*"
-    elseif vim.endswith(term, ".md") or vim.endswith(term, ".qmd") or vim.endswith(term, ".base") then
-      term = "*" .. term
+      additional_opts[#additional_opts + 1] = "-g"
+      additional_opts[#additional_opts + 1] = "*" .. escaped .. "*"
+      if not has_path_sep then
+        additional_opts[#additional_opts + 1] = "-g"
+        additional_opts[#additional_opts + 1] = "*" .. escaped .. "*/**"
+      end
+    elseif vim.endswith(escaped, ".md") or vim.endswith(escaped, ".qmd") or vim.endswith(escaped, ".base") then
+      additional_opts[#additional_opts + 1] = "-g"
+      additional_opts[#additional_opts + 1] = "*" .. escaped
     else
-      term = "*" .. term .. "*.{md,qmd,base}"
+      additional_opts[#additional_opts + 1] = "-g"
+      additional_opts[#additional_opts + 1] = "*" .. escaped .. "*.{md,qmd,base}"
+      if not has_path_sep then
+        additional_opts[#additional_opts + 1] = "-g"
+        additional_opts[#additional_opts + 1] = "*" .. escaped .. "*/**"
+      end
     end
-    additional_opts[#additional_opts + 1] = "-g"
-    additional_opts[#additional_opts + 1] = term
   end
 
   if opts.ignore_case then

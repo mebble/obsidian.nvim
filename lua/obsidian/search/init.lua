@@ -124,12 +124,20 @@ end
 ---@return vim.SystemObj handle
 M.find_async = function(dir, term, opts, on_match, on_exit)
   local norm_dir = Path.new(dir):resolve { strict = true }
-  local cmd = M.build_find_cmd(tostring(norm_dir), term, opts)
-  return async.run_job_async(cmd, on_match, function(code)
+  local norm_dir_str = tostring(norm_dir)
+  local cmd = M.build_find_cmd(".", term, opts)
+  return async.run_job_async(cmd, function(path)
+    -- rg outputs relative paths when given a cwd; make them absolute so callers
+    -- don't resolve against Neovim's working directory instead of the vault.
+    if not Path.new(path):is_absolute() then
+      path = norm_dir_str .. "/" .. (path:match "^%.?/?(.*)" or path)
+    end
+    on_match(path)
+  end, function(code)
     if on_exit ~= nil then
       on_exit(code)
     end
-  end)
+  end, norm_dir_str)
 end
 
 ---@param term string

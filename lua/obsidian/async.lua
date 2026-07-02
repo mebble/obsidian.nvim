@@ -6,7 +6,8 @@ local M = {}
 ---@param cmds string[]
 ---@param on_stdout function|? (string) -> nil
 ---@param on_exit function|? (integer) -> nil
-M.run_job_async = function(cmds, on_stdout, on_exit)
+---@param cwd string|? working directory for the job
+M.run_job_async = function(cmds, on_stdout, on_exit, cwd)
   local stderr_lines = false
 
   local on_obj = function(obj)
@@ -47,7 +48,7 @@ M.run_job_async = function(cmds, on_stdout, on_exit)
 
   log.debug("Initializing job '%s'", cmds)
 
-  local sys_obj = vim.system(cmds, { stdout = stdout, stderr = stderr }, on_obj)
+  local sys_obj = vim.system(cmds, { stdout = stdout, stderr = stderr, cwd = cwd }, on_obj)
 
   return sys_obj
 end
