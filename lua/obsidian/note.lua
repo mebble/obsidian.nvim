@@ -140,7 +140,7 @@ end
 --- @param path? obsidian.Path
 --- @param id_func (fun(title: string|?, path: obsidian.Path|?): string)
 ---@return string
-local function generate_id(base_id, path, id_func)
+Note.generate_id = function(base_id, path, id_func)
   local new_id = id_func(base_id, path)
   if new_id == nil or string.len(new_id) == 0 then
     error(string.format("Your 'note_id_func' must return a non-empty string, got '%s'!", tostring(new_id)))
@@ -320,7 +320,7 @@ Note._resolve_id_path = function(opts)
 
   -- Apply id transform
   if not (opts.verbatim and id) then
-    id = generate_id(id, base_dir, creation_opts.note_id_func)
+    id = Note.generate_id(id, base_dir, creation_opts.note_id_func)
   end
 
   dir = base_dir

@@ -93,6 +93,9 @@ vim.api.nvim_create_autocmd("FileType", {
       exec_autocmds "ObsidianNoteWritePre"
       local note = Note.from_buffer(ev.buf)
       if not vim.b[ev.buf].obsidian_help then
+        if not note.has_frontmatter then
+          note.id = Note.generate_id(note.path.stem, note.path:parent(), Obsidian.opts.note_id_func)
+        end
         note:update_frontmatter(ev.buf) -- Update buffer with new frontmatter.
       end
     end)
