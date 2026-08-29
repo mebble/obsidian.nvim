@@ -95,7 +95,9 @@ vim.api.nvim_create_autocmd("FileType", {
       if not vim.b[ev.buf].obsidian_help then
         if not note.has_frontmatter then
           note.id = Note.generate_id(note.path.stem, note.path:parent(), Obsidian.opts.note_id_func)
-          note.title = note.title or note.path.stem
+          if note.title == nil and #note.aliases == 0 then
+            table.insert(note.aliases, note.path.stem)
+          end
         end
         note:update_frontmatter(ev.buf) -- Update buffer with new frontmatter.
       end
