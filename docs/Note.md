@@ -81,6 +81,8 @@ local note = require("obsidian.note").create {
 
 ## Note ID Presets
 
+`note_id_func` is called in two situations: when a note is created via `Note.create` (using the title or supplied ID as input), and on first save of any note that has no frontmatter yet (using the file's stem and parent directory as input).
+
 By default obsidian.nvim uses random zettel IDs. (**Legacy design decision, in 4.0.0 will be default to human readable input title**)
 
 If you want readable UTF-8 title-based IDs (works across scripts), use the built-in preset:
